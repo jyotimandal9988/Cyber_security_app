@@ -8,12 +8,8 @@ from datetime import datetime
 app = Flask(__name__)
 app.secret_key = "supersecretkey"
 
-if os.environ.get("VERCEL_ENV") or os.environ.get("VERCEL"):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/database.db'
-    UPLOAD_FOLDER = "/tmp/uploads"
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-    UPLOAD_FOLDER = "static/uploads"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+UPLOAD_FOLDER = "static/uploads"
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
