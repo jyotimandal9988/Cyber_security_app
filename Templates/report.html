@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div class="form-card">
+    <h2>Report New Incident</h2>
+    <form method="POST">
+        <input type="text" name="title" placeholder="Incident Title" required>
+        <textarea name="description" placeholder="Describe the incident..." required></textarea>
+        <button type="submit">Submit Report</button>
+    </form>
+    {% if suggestion %}
+    <div class="solution-box">
+        <h3>Suggested Solution:</h3>
+        <p>{{ suggestion }}</p>
+    </div>
+{% endif %}
+</div>
+
+{% endblock %}

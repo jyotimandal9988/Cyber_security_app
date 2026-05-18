@@ -1,0 +1,243 @@
+/* ===============================
+   GLOBAL
+================================= */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: white;
+    overflow-x: hidden;
+}
+
+/* Animated Cyber Background */
+.cyber-bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(270deg, #0f2027, #203a43, #2c5364);
+    background-size: 600% 600%;
+    animation: gradientMove 15s ease infinite;
+    z-index: -3;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 50%;}
+    50% { background-position: 100% 50%;}
+    100% { background-position: 0% 50%;}
+}
+
+/* ===============================
+   NAVBAR FIXED
+================================= */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(10px);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: bold;
+    color: #00ffff;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.nav-links a {
+    margin-left: 25px;
+    text-decoration: none;
+    color: #00ffff;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    color: white;
+    text-shadow: 0 0 10px #00ffff;
+}
+
+.logout-btn {
+    color: #ff4d4d;
+}
+
+/* ===============================
+   CONTAINER
+================================= */
+.container {
+    width: 80%;
+    margin: 60px auto;
+}
+
+/* ===============================
+   HERO
+================================= */
+.hero {
+    text-align: center;
+    margin-top: 100px;
+}
+
+.hero h1 {
+    font-size: 50px;
+    text-shadow: 0 0 20px #00ffff;
+}
+
+.primary-btn {
+    display: inline-block;
+    padding: 12px 25px;
+    margin-top: 25px;
+    background: #00ffff;
+    color: black;
+    font-weight: bold;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.primary-btn:hover {
+    background: white;
+    box-shadow: 0 0 20px #00ffff;
+}
+
+/* ===============================
+   FORM CARD
+================================= */
+.form-card {
+    width: 420px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 15px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 0 25px rgba(0,255,255,0.3);
+}
+
+/* ===============================
+   INPUTS
+================================= */
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+input[type="file"] {
+    padding: 8px;
+    background: rgba(255,255,255,0.15);
+}
+
+/* ===============================
+   BUTTON
+================================= */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #00ffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: white;
+    box-shadow: 0 0 15px #00ffff;
+}
+
+/* ===============================
+   DASHBOARD CARDS
+================================= */
+.report-card, .stat-card {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 20px rgba(0,255,255,0.2);
+    transition: 0.3s;
+}
+
+.report-card:hover {
+    transform: translateY(-4px);
+}
+
+/* ===============================
+   RISK LEVEL COLORS
+================================= */
+.high {
+    color: #ff3b3b;
+    font-weight: bold;
+    text-shadow: 0 0 8px red;
+}
+
+.medium {
+    color: #ffae00;
+    font-weight: bold;
+    text-shadow: 0 0 8px orange;
+}
+
+.low {
+    color: #00ff99;
+    font-weight: bold;
+    text-shadow: 0 0 8px #00ff99;
+}
+
+/* ===============================
+   DELETE BUTTON
+================================= */
+.delete-btn {
+    color: #ff4d4d;
+    text-decoration: none;
+}
+
+/* ===============================
+   FLASH MESSAGE
+================================= */
+.flash {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: rgba(0,255,0,0.2);
+    border-left: 5px solid #00ff99;
+}
+
+/* ===============================
+   FOOTER
+================================= */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 60px;
+    background: rgba(0,0,0,0.6);
+}
+
+/* ===============================
+   RESPONSIVE
+================================= */
+@media(max-width: 768px){
+    .navbar {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .container {
+        width: 95%;
+    }
+
+    .form-card {
+        width: 95%;
+    }
+}

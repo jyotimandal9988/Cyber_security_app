@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Security Dashboard</h2>
+
+<!-- 🔐 Threat Intelligence Section -->
+<div class="report-card">
+    <h3>Threat Intelligence Score</h3>
+    <p><strong>Score:</strong> {{ threat_score }}</p>
+    <p>
+        <strong>Status:</strong>
+        <span class="{{ threat_level|lower }}">
+            {{ threat_level }}
+        </span>
+    </p>
+</div>
+
+<!-- 📍 Recent Login Activity -->
+<div class="report-card">
+    <h3>Recent Login Activity</h3>
+    {% if recent_logins %}
+        {% for log in recent_logins %}
+            <p>
+                👤 {{ log.username }} |
+                🌐 {{ log.ip_address }} |
+                🕒 {{ log.login_time.strftime("%Y-%m-%d %H:%M") }}
+            </p>
+        {% endfor %}
+    {% else %}
+        <p>No login activity recorded.</p>
+    {% endif %}
+</div>
+
+<!-- 📁 File Scanner Section -->
+<div class="report-card">
+    <h3>File Malware Scanner</h3>
+    <form method="POST" action="/scan" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Scan File</button>
+    </form>
+</div>
+
+<!-- 🛡 Scan History -->
+<div class="report-card">
+    <h3>Scan History</h3>
+    {% if scans %}
+        {% for scan in scans %}
+            <div class="report-card">
+                <p><strong>File:</strong> {{ scan.filename }}</p>
+                <p>
+                    <strong>Risk Level:</strong>
+                    <span class="{{ scan.risk_level|lower }}">
+                        {{ scan.risk_level }}
+                    </span>
+                </p>
+                <p>{{ scan.result }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No scans performed yet.</p>
+    {% endif %}
+</div>
+
+<!-- 📋 Incident Reports -->
+<div class="report-card">
+    <h3>Your Incident Reports</h3>
+    {% if reports %}
+        {% for report in reports %}
+            <div class="report-card">
+                <h4>{{ report.title }}</h4>
+                <p>{{ report.description }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No reports submitted yet.</p>
+    {% endif %}
+</div>
+
+{% endblock %}
