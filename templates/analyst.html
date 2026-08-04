@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Security Analyst Operations Panel</h2>
+
+<!-- 📋 Incident Queue -->
+<div class="report-card" id="investigations-section">
+    <h3>Incident Investigation Queue</h3>
+    <p style="color: #ccc; margin-bottom: 20px;">Review user-submitted threat reports, assign status, and document analyst investigations.</p>
+
+    {% if reports %}
+        {% for report in reports %}
+            <div class="report-card" style="border-left: 5px solid {% if report.status == 'Open' %}#00ffff{% elif report.status == 'Investigating' %}#ffae00{% elif report.status == 'Resolved' %}#00ff99{% else %}#ccc{% endif %};">
+                <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap;">
+                    <div>
+                        <h4>⚠️ {{ report.title }}</h4>
+                        <p style="font-size: 14px; color: #bbb;"><strong>Reported By:</strong> 👤 {{ users_map.get(report.user_id, "User ID " ~ report.user_id) }}</p>
+                    </div>
+                    <div>
+                        <span class="badge {{ report.status|lower }}">{{ report.status }}</span>
+                    </div>
+                </div>
+                
+                <p style="margin: 15px 0; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 6px;">{{ report.description }}</p>
+
+                <!-- Investigation Notes and status update form -->
+                <form method="POST" action="/update-report-status/{{ report.id }}" style="margin-top: 15px;">
+                    <label style="font-size: 13px; color: #00ffff; display: block; margin-bottom: 5px;">Analyst Notes:</label>
+                    <textarea name="notes" placeholder="Add investigation steps, findings, and resolutions here..." style="margin-bottom: 10px; min-height: 80px; width: 100%; box-sizing: border-box;">{{ report.notes or '' }}</textarea>
+                    
+                    <div class="analyst-action-container">
+                        <span style="font-size: 13px; color: #ccc;">Transition Status:</span>
+                        
+                        <button type="submit" name="status" value="Investigating" class="inline-btn" style="width: auto; background: #ffae00; color: black; box-shadow: none;">Investigating</button>
+                        
+                        <button type="submit" name="status" value="Resolved" class="inline-btn" style="width: auto; background: #00ff99; color: black; box-shadow: none;">Mark Resolved</button>
+                        
+                        <button type="submit" name="status" value="Closed" class="inline-btn" style="width: auto; background: rgba(255,255,255,0.2); color: white; border: 1px solid #ccc; box-shadow: none;">Close Incident</button>
+                        
+                        <button type="submit" name="status" value="Open" class="inline-btn" style="width: auto; background: #00ffff; color: black; box-shadow: none;">Reopen</button>
+                    </div>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="color: #888;">No incidents currently in the queue.</p>
+    {% endif %}
+</div>
+
+<!-- 📁 File Scan Queue -->
+<div class="report-card" id="reports-section">
+    <h3>Threat Scanned Files Log</h3>
+    <p style="color: #ccc; margin-bottom: 20px;">View risk analysis levels and malware scanner outputs for all files uploaded by users.</p>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Risk Level</th>
+                    <th>Scan Results</th>
+                    <th>Uploaded By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if scans %}
+                    {% for scan in scans %}
+                    <tr>
+                        <td>📁 {{ scan.filename }}</td>
+                        <td>
+                            <span class="{{ scan.risk_level|lower }}">
+                                {{ scan.risk_level }}
+                            </span>
+                        </td>
+                        <td>{{ scan.result }}</td>
+                        <td>👤 {{ users_map.get(scan.user_id, "User ID " ~ scan.user_id) }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #888;">No scans recorded in the system.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -23,7 +23,7 @@
             <p>
                 👤 {{ log.username }} |
                 🌐 {{ log.ip_address }} |
-                🕒 {{ log.login_time.strftime("%Y-%m-%d %H:%M") }}
+                🕒 {{ log.login_time | format_ist }}
             </p>
         {% endfor %}
     {% else %}
@@ -32,7 +32,7 @@
 </div>
 
 <!-- 📁 File Scanner Section -->
-<div class="report-card">
+<div class="report-card" id="file-scanner">
     <h3>File Malware Scanner</h3>
     <form method="POST" action="/scan" enctype="multipart/form-data">
         <input type="file" name="file" required>
@@ -66,9 +66,17 @@
     <h3>Your Incident Reports</h3>
     {% if reports %}
         {% for report in reports %}
-            <div class="report-card">
-                <h4>{{ report.title }}</h4>
+            <div class="report-card" style="border-left: 4px solid {% if report.status == 'Open' %}#00ffff{% elif report.status == 'Investigating' %}#ffae00{% elif report.status == 'Resolved' %}#00ff99{% else %}#ccc{% endif %};">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h4 style="margin: 0;">{{ report.title }}</h4>
+                    <span class="badge {{ report.status|lower }}">{{ report.status }}</span>
+                </div>
                 <p>{{ report.description }}</p>
+                {% if report.notes %}
+                    <div style="margin-top: 10px; padding: 8px; background: rgba(0,255,255,0.05); border-radius: 5px; font-size: 13px;">
+                        <strong>Analyst Notes:</strong> <em>{{ report.notes }}</em>
+                    </div>
+                {% endif %}
             </div>
         {% endfor %}
     {% else %}

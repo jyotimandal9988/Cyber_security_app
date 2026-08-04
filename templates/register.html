@@ -5,9 +5,97 @@
     <h2>Create Account</h2>
     <form method="POST">
         <input type="text" name="username" placeholder="Enter Username" required>
-        <input type="password" name="password" placeholder="Enter Password" required>
+        <input type="password" id="password" name="password" placeholder="Enter Password" required>
+        
+        <div class="password-strength-container" id="strength-container" style="display: none;">
+            <div class="strength-header">
+                <span>Password Strength:</span>
+                <span id="strength-label" class="strength-label weak">Weak</span>
+            </div>
+            <div class="strength-bar-wrapper">
+                <div id="strength-bar" class="strength-bar weak-bar"></div>
+            </div>
+            <ul class="strength-requirements">
+                <li id="req-length" class="req-item">At least 8 characters</li>
+                <li id="req-uppercase" class="req-item">At least one uppercase letter</li>
+                <li id="req-lowercase" class="req-item">At least one lowercase letter</li>
+                <li id="req-number" class="req-item">At least one number</li>
+                <li id="req-special" class="req-item">At least one special character</li>
+            </ul>
+        </div>
+
         <button type="submit">Register</button>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('password');
+    const container = document.getElementById('strength-container');
+    const label = document.getElementById('strength-label');
+    const bar = document.getElementById('strength-bar');
+    
+    const reqLength = document.getElementById('req-length');
+    const reqUppercase = document.getElementById('req-uppercase');
+    const reqLowercase = document.getElementById('req-lowercase');
+    const reqNumber = document.getElementById('req-number');
+    const reqSpecial = document.getElementById('req-special');
+    
+    passwordInput.addEventListener('input', function() {
+        const val = passwordInput.value;
+        
+        if (val.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        container.style.display = 'block';
+        
+        // Evaluate requirements
+        const hasLength = val.length >= 8;
+        const hasUpper = /[A-Z]/.test(val);
+        const hasLower = /[a-z]/.test(val);
+        const hasNum = /[0-9]/.test(val);
+        const hasSpec = /[^A-Za-z0-9]/.test(val);
+        
+        // Update checklist visual state
+        updateReqStatus(reqLength, hasLength);
+        updateReqStatus(reqUppercase, hasUpper);
+        updateReqStatus(reqLowercase, hasLower);
+        updateReqStatus(reqNumber, hasNum);
+        updateReqStatus(reqSpecial, hasSpec);
+        
+        // Compute score (0 to 5)
+        const score = [hasLength, hasUpper, hasLower, hasNum, hasSpec].filter(Boolean).length;
+        
+        // Reset classes
+        label.className = 'strength-label';
+        bar.className = 'strength-bar';
+        
+        // Map scores to levels (Weak <= 2, Medium 3 or 4, Strong = 5)
+        if (score <= 2) {
+            label.textContent = 'Weak';
+            label.classList.add('weak');
+            bar.classList.add('weak-bar');
+        } else if (score <= 4) {
+            label.textContent = 'Medium';
+            label.classList.add('medium');
+            bar.classList.add('medium-bar');
+        } else {
+            label.textContent = 'Strong';
+            label.classList.add('strong');
+            bar.classList.add('strong-bar');
+        }
+    });
+    
+    function updateReqStatus(elem, isValid) {
+        if (isValid) {
+            elem.classList.add('valid');
+        } else {
+            elem.classList.remove('valid');
+        }
+    }
+});
+</script>
 
 {% endblock %}

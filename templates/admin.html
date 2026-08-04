@@ -1,0 +1,210 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h2>Admin Control Panel</h2>
+
+<!-- 📊 Dashboard Analytics Grid -->
+<div class="stat-grid" id="analytics-section">
+    <div class="stat-card report-card">
+        <h3>Total Users</h3>
+        <div class="stat-value">{{ total_users }}</div>
+    </div>
+    <div class="stat-card report-card">
+        <h3>Total Reports</h3>
+        <div class="stat-value">{{ total_reports }}</div>
+    </div>
+    <div class="stat-card report-card">
+        <h3>Total File Scans</h3>
+        <div class="stat-value">{{ total_scans }}</div>
+    </div>
+    <div class="stat-card report-card">
+        <h3>High Risk Files</h3>
+        <div class="stat-value high">{{ high_risk_files }}</div>
+    </div>
+    <div class="stat-card report-card">
+        <h3>Today's Logins</h3>
+        <div class="stat-value">{{ todays_logins }}</div>
+    </div>
+    <div class="stat-card report-card">
+        <h3>Threat Score Average</h3>
+        <div class="stat-value">{{ avg_threat_score }}</div>
+    </div>
+</div>
+
+<!-- 👥 User Management Section -->
+<div class="report-card" id="users-section">
+    <h3>Manage Users</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Registration Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>👤 {{ u.username }}</td>
+                    <td>
+                        <span class="badge {% if u.role == 'Admin' %}open{% elif u.role == 'Analyst' %}investigating{% else %}closed{% endif %}">
+                            {{ u.role }}
+                        </span>
+                    </td>
+                    <td>🕒 {{ u.created_at | format_ist if u.created_at else "N/A" }}</td>
+                    <td>
+                        {% if u.username != 'admin' %}
+                        <!-- Edit Role Form -->
+                        <form method="POST" action="/change-role/{{ u.id }}" class="inline-form">
+                            <select name="role" onchange="this.form.submit()">
+                                <option value="User" {% if u.role == 'User' %}selected{% endif %}>User</option>
+                                <option value="Analyst" {% if u.role == 'Analyst' %}selected{% endif %}>Analyst</option>
+                                <option value="Admin" {% if u.role == 'Admin' %}selected{% endif %}>Admin</option>
+                            </select>
+                        </form>
+                        <!-- Delete User Form -->
+                        <form method="POST" action="/delete-user/{{ u.id }}" class="inline-form" onsubmit="return confirm('Are you sure you want to delete this user? This will also delete all their reports and scans.');">
+                            <button type="submit" class="inline-btn danger" style="width: auto; margin-left: 10px; padding: 6px 12px;">Delete</button>
+                        </form>
+                        {% else %}
+                        <span style="color: #ccc; font-style: italic;">System Root</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 📋 Global Incident Reports -->
+<div class="report-card" id="reports-section">
+    <h3>Global Incident Reports</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Reported By</th>
+                    <th>Status</th>
+                    <th>Analyst Notes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if reports %}
+                    {% for report in reports %}
+                    <tr>
+                        <td><strong>{{ report.title }}</strong></td>
+                        <td>{{ report.description }}</td>
+                        <td>👤 {{ users_map.get(report.user_id, "Unknown (" ~ report.user_id ~ ")") }}</td>
+                        <td>
+                            <span class="badge {{ report.status|lower }}">
+                                {{ report.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if report.notes %}
+                                <span style="font-size: 13px; font-style: italic;">{{ report.notes }}</span>
+                            {% else %}
+                                <span style="color: #888; font-size: 13px; font-style: italic;">No notes yet</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="/delete-report/{{ report.id }}" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                <button type="submit" class="inline-btn danger" style="width: auto; padding: 6px 12px;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: #888;">No reports filed yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 📁 Global Scan History -->
+<div class="report-card" id="scans-section">
+    <h3>Global File Scans</h3>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Risk Level</th>
+                    <th>Result</th>
+                    <th>Scanned By</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if scans %}
+                    {% for scan in scans %}
+                    <tr>
+                        <td>📁 {{ scan.filename }}</td>
+                        <td>
+                            <span class="{{ scan.risk_level|lower }}">
+                                {{ scan.risk_level }}
+                            </span>
+                        </td>
+                        <td>{{ scan.result }}</td>
+                        <td>👤 {{ users_map.get(scan.user_id, "Unknown (" ~ scan.user_id ~ ")") }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #888;">No files scanned yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 🕒 Recent Login Activity -->
+<div class="report-card" id="logins-section">
+    <h3>Global Login Activity History</h3>
+    {% if login_activities %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>IP Address</th>
+                        <th>Login Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in login_activities %}
+                    <tr>
+                        <td>👤 {{ log.username }}</td>
+                        <td>🌐 {{ log.ip_address }}</td>
+                        <td>🕒 {{ log.login_time | format_ist }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>No login activity recorded.</p>
+    {% endif %}
+</div>
+
+{% if scroll_to %}
+<script>
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const el = document.getElementById('{{ scroll_to }}');
+        if (el) {
+            el.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+</script>
+{% endif %}
+
+{% endblock %}

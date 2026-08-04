@@ -40,3 +40,10 @@ static/uploads/*
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
+
+# Testing / Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+*.egg-info/

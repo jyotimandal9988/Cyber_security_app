@@ -21,8 +21,20 @@
             <a href="/">Home</a>
 
             {% if session.get('user_id') %}
-                <a href="/dashboard">Dashboard</a>
-                <a href="/report">Report</a>
+                {% if session.get('role') == 'Admin' %}
+                    <a href="/admin">Dashboard</a>
+                    <a href="/manage-users">Manage Users</a>
+                    <a href="/admin#reports-section">Reports</a>
+                    <a href="/admin#analytics-section">Analytics</a>
+                {% elif session.get('role') == 'Analyst' %}
+                    <a href="/analyst">Dashboard</a>
+                    <a href="/analyst#investigations-section">Investigations</a>
+                    <a href="/analyst#reports-section">Reports</a>
+                {% else %}
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="/report">Report Incident</a>
+                    <a href="/dashboard#file-scanner">Upload File</a>
+                {% endif %}
                 <a href="/logout" class="logout-btn">Logout</a>
             {% else %}
                 <a href="/login">Login</a>
@@ -35,10 +47,10 @@
     <div class="container">
 
         <!-- Flash Messages -->
-        {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                {% for msg in messages %}
-                    <div class="flash">{{ msg }}</div>
+                {% for category, msg in messages %}
+                    <div class="flash {% if category %}{{ category }}{% else %}message{% endif %}">{{ msg }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
@@ -50,6 +62,88 @@
     <footer>
         <p>© 2026 CyberSecure | Built with Flask 🔐</p>
     </footer>
+
+    <!-- File Scan Loading Modal Popup -->
+    <div id="scan-loading-modal" class="scan-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+        <div class="scan-modal-content">
+            <div class="scan-modal-spinner-container">
+                <div class="scan-cyber-spinner">
+                    <div class="spinner-inner"></div>
+                </div>
+            </div>
+            <h3 class="scan-modal-title">Scanning File...</h3>
+            <p class="scan-modal-message">Please wait while CyberSentinel analyzes your file for potential security threats.</p>
+            <p class="scan-modal-subtitle">This may take a few seconds.</p>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const scanForms = document.querySelectorAll('form[action="/scan"], #file-scanner form');
+        const modal = document.getElementById('scan-loading-modal');
+
+        scanForms.forEach(function(scanForm) {
+            const scanBtn = scanForm.querySelector('button[type="submit"]') || scanForm.querySelector('button');
+            if (!scanBtn) return;
+
+            const originalBtnHTML = scanBtn.innerHTML;
+            let isSubmitting = false;
+
+            function resetState() {
+                isSubmitting = false;
+                if (modal) {
+                    modal.classList.remove('active');
+                    modal.setAttribute('aria-hidden', 'true');
+                }
+                if (scanBtn) {
+                    scanBtn.disabled = false;
+                    scanBtn.classList.remove('btn-scanning');
+                    scanBtn.style.cursor = '';
+                    scanBtn.style.opacity = '';
+                    scanBtn.innerHTML = originalBtnHTML;
+                }
+            }
+
+            // Reset state on initial load and pageshow (back/forward cache navigation)
+            resetState();
+            window.addEventListener('pageshow', resetState);
+
+            scanBtn.addEventListener('click', function(e) {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            });
+
+            scanForm.addEventListener('submit', function(e) {
+                if (isSubmitting) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                if (!scanForm.checkValidity()) {
+                    return;
+                }
+
+                isSubmitting = true;
+
+                // Show modal popup
+                if (modal) {
+                    modal.classList.add('active');
+                    modal.setAttribute('aria-hidden', 'false');
+                }
+
+                // Immediately update button visual state
+                scanBtn.disabled = true;
+                scanBtn.classList.add('btn-scanning');
+                scanBtn.style.cursor = 'not-allowed';
+                scanBtn.style.opacity = '0.7';
+                scanBtn.innerHTML = '<span class="btn-spinner"></span> Scanning...';
+            });
+        });
+    });
+    </script>
 
 </body>
 </html>
